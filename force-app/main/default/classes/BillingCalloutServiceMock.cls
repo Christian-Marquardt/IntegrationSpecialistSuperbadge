@@ -12,7 +12,7 @@ global class BillingCalloutServiceMock implements WebServiceMock {
         String responseType
     ) {
         BillingServiceProxy.billProjectResponse_element respElement = new BillingServiceProxy.billProjectResponse_element();
-        respElement.status = 'OK';
+        respElement.status = ApexConstants.HTTP_RESPONSE_OK;
         response.put('response_x', respElement);
     }
 }

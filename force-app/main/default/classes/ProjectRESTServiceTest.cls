@@ -4,14 +4,14 @@ private class ProjectRESTServiceTest {
     static void testSetup() {
         Test.startTest();
         ServiceTokens__c serviceTokenSetting = new ServiceTokens__c();
-        serviceTokenSetting.Name = 'ProjectServiceToken';
+        serviceTokenSetting.Name = ApexConstants.PROJECT_SERVICE_TOKEN;
         serviceTokenSetting.Token__c = '3cf85446-9405-45ac-89b2-65d6dd204f11';
         insert serviceTokenSetting;
 
         ServiceCredentials__c serviceCredentials = new ServiceCredentials__c();
-        serviceCredentials.Name = 'BillingServiceCredential';
-        serviceCredentials.Username__c = 'bsUser1';
-        serviceCredentials.Password__c = 'bsPass1';
+        serviceCredentials.Name = ApexConstants.BILLING_SERVICE_CREDENTIAL;
+        serviceCredentials.Username__c = ApexConstants.BS_USERNAME_1;
+        serviceCredentials.Password__c = ApexConstants.BS_PASSWORD_1;
         insert serviceCredentials;
 
         Account acc = new Account(Name = 'Test Account');
@@ -20,7 +20,7 @@ private class ProjectRESTServiceTest {
         Opportunity opp = new Opportunity(
             Name = 'Heavens Gate Inc.',
             AccountId = acc.Id,
-            StageName = 'Open',
+            StageName = ApexConstants.OPP_STAGE_NAME_OPEN,
             CloseDate = System.today(),
             Amount = 100.00
         );
@@ -45,7 +45,7 @@ private class ProjectRESTServiceTest {
         );
         Test.stopTest();
 
-        Assert.areEqual('OK', response);
+        Assert.areEqual(ApexConstants.HTTP_RESPONSE_OK, response, 'Response did not result in OK');
     }
 
     @isTest
@@ -60,11 +60,11 @@ private class ProjectRESTServiceTest {
             System.today(),
             System.today(),
             (Double) 12.00,
-            'Prospecting'
+            ApexConstants.OPP_STAGE_NAME_PROSPECTING
         );
         Test.stopTest();
 
-        Assert.areNotEqual('OK', response);
+        Assert.areNotEqual(ApexConstants.HTTP_RESPONSE_OK, response, 'Response should have not been set OK');
     }
 
     @isTest
@@ -79,10 +79,10 @@ private class ProjectRESTServiceTest {
             System.today(),
             System.today(),
             (Double) 12.00,
-            'Prospecting'
+            ApexConstants.OPP_STAGE_NAME_PROSPECTING
         );
         Test.stopTest();
 
-        Assert.areNotEqual('OK', response);
+        Assert.areNotEqual(ApexConstants.HTTP_RESPONSE_OK, response, 'Response should have not been set OK');
     }
 }

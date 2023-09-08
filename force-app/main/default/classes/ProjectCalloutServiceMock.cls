@@ -4,8 +4,8 @@ global class ProjectCalloutServiceMock implements HttpCalloutMock {
     global HTTPResponse respond(HTTPRequest req) {
         // Optionally, only send a mock response for a specific endpoint
         // and method.
-        System.assertEquals('callout:ProjectService', req.getEndpoint());
-        System.assertEquals('POST', req.getMethod());
+        System.assertEquals('callout:ProjectService', req.getEndpoint(), 'Incorrect request endpoint');
+        System.assertEquals(ApexConstants.HTTP_REQUEST_POST, req.getMethod(), 'Incorrect Request Method as it should be POST');
 
         // Create a fake response
         HttpResponse res = new HttpResponse();

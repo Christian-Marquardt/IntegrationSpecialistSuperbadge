@@ -12,13 +12,12 @@ global class ProjectRESTService {
         String Status
     ) {
         String returnMessage = '';
-        System.debug('HELP');
         Savepoint objSavePoint = Database.setSavepoint();
 
         try {
             if (OpportunityId != null && OpportunityId.trim().length() > 0) {
                 Opportunity opp = new Opportunity(Id = opportunityId);
-                opp.DeliveryInstallationStatus__c = 'In progress';
+                opp.DeliveryInstallationStatus__c = ApexConstants.OPP_DELIVERY_INST_IN_PROGRESS;
                 update opp;
 
                 Project__c project = new Project__c(ProjectRef__c = ProjectRef);
@@ -27,16 +26,18 @@ global class ProjectRESTService {
                 project.Start_Date__c = startDate;
                 project.End_Date__c = endDate;
                 project.Billable_Amount__c = Amount;
-                upsert project;
 
-                returnMessage = 'OK';
+                // Using External Id to avoid an additional query
+                upsert project ProjectRef__c;
+
+                returnMessage = ApexConstants.HTTP_RESPONSE_OK;
             } else {
-                returnMessage = 'Invalid work';
+                returnMessage = 'Invalid Opportunity Id';
             }
         } catch (Exception e) {
             Database.RollBack(objSavePoint);
 
-            returnMessage = 'Exception is ' + e.getMessage();
+            returnMessage = 'Exception: ' + e.getMessage();
         }
 
         return returnMessage;

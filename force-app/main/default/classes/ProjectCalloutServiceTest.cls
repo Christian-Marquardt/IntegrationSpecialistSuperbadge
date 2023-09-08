@@ -4,20 +4,26 @@ private class ProjectCalloutServiceTest {
     static void testSetup() {
         Test.startTest();
         ServiceTokens__c serviceTokenSetting = new ServiceTokens__c();
-        serviceTokenSetting.Name = 'ProjectServiceToken';
+        serviceTokenSetting.Name = ApexConstants.PROJECT_SERVICE_TOKEN;
         serviceTokenSetting.Token__c = '3cf85446-9405-45ac-89b2-65d6dd204f11';
         insert serviceTokenSetting;
 
         ServiceCredentials__c serviceCredentials = new ServiceCredentials__c();
-        serviceCredentials.Name = 'BillingServiceCredential';
-        serviceCredentials.Username__c = 'bsUser1';
-        serviceCredentials.Password__c = 'bsPass1';
+        serviceCredentials.Name = ApexConstants.BILLING_SERVICE_CREDENTIAL;
+        serviceCredentials.Username__c = ApexConstants.BS_USERNAME_1;
+        serviceCredentials.Password__c = ApexConstants.BS_PASSWORD_1;
         insert serviceCredentials;
 
         Account acc = new Account(Name = 'Test Account');
         insert acc;
 
-        Opportunity opp = new Opportunity(Name = 'Heavens Gate Inc.', AccountId = acc.Id, StageName = 'Open', CloseDate = System.today());
+        Opportunity opp = new Opportunity(
+            Name = 'Heavens Gate Inc.',
+            AccountId = acc.Id,
+            StageName = ApexConstants.OPP_STAGE_NAME_OPEN,
+            CloseDate = System.today(),
+            Amount = 100.00
+        );
         insert opp;
 
         Test.stopTest();
@@ -35,17 +41,17 @@ private class ProjectCalloutServiceTest {
         // Set mock callout class
         Test.setMock(HttpCalloutMock.class, new ProjectCalloutServiceMock());
 
-        // Call method to test.
-        // This causes a fake response to be sent
-        // from the class that implements HttpCalloutMock.
-        //HttpResponse res = CalloutClass.getInfoFromExternalService();
         Test.startTest();
         ProjectCalloutService.PostOpportunityToPMS(opportunityIds);
         Test.stopTest();
 
         oppList = [SELECT Id, StageName FROM Opportunity WHERE Id IN :opportunityIds];
 
-        Assert.areEqual('Submitted Project', oppList[0].StageName, 'Response was invalid');
+        Assert.areEqual(
+            ApexConstants.OPP_STAGE_NAME_SUBMITTED_PROJECT,
+            oppList[0].StageName,
+            'Opportunity did not update to Submitted Project with successful response'
+        );
     }
 
     @isTest
@@ -66,7 +72,11 @@ private class ProjectCalloutServiceTest {
 
         oppList = [SELECT Id, StageName FROM Opportunity WHERE Id IN :opportunityIds];
 
-        Assert.areEqual('Resubmit Project', oppList[0].StageName, 'Response was invalid');
+        Assert.areEqual(
+            ApexConstants.OPP_STAGE_NAME_RESUBMIT_PROJECT,
+            oppList[0].StageName,
+            'Opportunity and failed response did not get set to Resubmit Project'
+        );
     }
 
     @isTest
@@ -84,6 +94,6 @@ private class ProjectCalloutServiceTest {
 
         oppList = [SELECT Id, StageName FROM Opportunity WHERE Id IN :oppList LIMIT 1];
 
-        Assert.areEqual('Open', oppList[0].StageName, 'Response was invalid');
+        Assert.areEqual(ApexConstants.OPP_STAGE_NAME_OPEN, oppList[0].StageName, 'Opportunity did not remain Open');
     }
 }
